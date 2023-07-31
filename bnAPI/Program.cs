@@ -19,7 +19,19 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllHeaders",
+        b =>
+        {
+            b.WithOrigins("https://thankful-bush-0e0949c0f.3.azurestaticapps.net/")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+});
 
+app.UseCors("AllowAllHeaders");
 app.MapControllers();
 
 app.MapHub<LobbyHub>("/lobby-hub");
