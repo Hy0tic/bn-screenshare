@@ -2,11 +2,8 @@
 
 namespace bnAPI.Controllers;
 
+[ApiController]
 public class LobbyController : Controller
 {
-    // GET
-    public IActionResult Index()
-    {
-        return View();
-    }
+
 }
