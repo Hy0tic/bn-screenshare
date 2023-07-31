@@ -5,5 +5,10 @@ namespace bnAPI.Controllers;
 [ApiController]
 public class LobbyController : Controller
 {
+    [HttpGet("/hello")]
+    public IActionResult Hello()
+    {
+        return Ok("Hello");
+    }
 
 }
