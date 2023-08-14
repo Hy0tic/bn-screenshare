@@ -1,0 +1,63 @@
+﻿FROM ubuntu:20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+libmicrohttpd-dev \
+libjansson-dev \
+libssl-dev \
+libsofia-sip-ua-dev \
+libglib2.0-dev \
+libopus-dev \
+libogg-dev \
+libcurl4-openssl-dev \
+liblua5.3-dev \
+libconfig-dev \
+pkg-config \
+gengetopt \
+libtool \
+automake \
+gtk-doc-tools \
+git \
+make \
+meson \
+ninja-build
+
+# Install libnice
+RUN apt-get install -y python3 python3-pip python3-setuptools
+RUN git clone https://gitlab.freedesktop.org/libnice/libnice
+WORKDIR /libnice
+RUN meson --prefix=/usr build && ninja -C build && ninja -C build install
+WORKDIR /
+
+# Install libsrtp2
+RUN apt-get install -y libssl-dev libjansson-dev
+RUN git clone https://github.com/cisco/libsrtp.git
+WORKDIR /libsrtp
+RUN ./configure --prefix=/usr --enable-openssl
+RUN make shared_library && make install
+WORKDIR /
+
+# Clone Janus source code
+RUN git clone https://github.com/meetecho/janus-gateway.git
+
+# Build and install Janus
+WORKDIR /janus-gateway
+RUN sh autogen.sh
+RUN ./configure --prefix=/opt/janus
+RUN make && make install && make configs
+
+# Configure STUN server
+RUN sed -i 's/#stun_server = "stun.l.google.com"/stun_server = "stun4.l.google.com"/' /opt/janus/etc/janus/janus.jcfg
+RUN sed -i 's/#stun_port = 19302/stun_port = 19302/' /opt/janus/etc/janus/janus.jcfg
+
+# Expose the necessary ports
+EXPOSE 7088 8088 8188 8089
+
+# Start Janus
+CMD ["/opt/janus/bin/janus"]
+
+# docker build -t your_image_name:your_tag path_to_dockerfile_directory
+# docker run -d --name my_janus_instance -p 7088:7088 -p 8088:8088 -p 8188:8188 -p 8089:8089 janus_image:latest
