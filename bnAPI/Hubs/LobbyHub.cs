@@ -7,7 +7,7 @@ public class LobbyHub : Hub
 {
     public async Task CreateLobby()
     {
-        var lobbyId = Guid.NewGuid();
+        var lobbyId = Guid.NewGuid().ToString().Substring(0, 5);
         var groupName = $"Lobby-{lobbyId}";
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         await Clients.Caller.SendAsync("JoinedGroup", lobbyId);
