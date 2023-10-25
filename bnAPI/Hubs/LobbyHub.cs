@@ -39,10 +39,10 @@ public class LobbyHub : Hub
         await Clients.OthersInGroup(lobbyName).SendAsync("ReceivingOffer", text,Context.ConnectionId);
     }
 
-    public async Task SendMessage(string message, string lobbyId)
+    public async Task SendMessage(string username, string message, string lobbyId)
     {
         var groupName = $"Lobby-{lobbyId}";
-        await Clients.Group(groupName).SendAsync("ReceiveMessage", message);
+        await Clients.Group(groupName).SendAsync("ReceiveMessage", username,message);
     }
     
 }
