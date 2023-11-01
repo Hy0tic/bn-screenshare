@@ -7,7 +7,7 @@ Signaling Server for bn-screenshare
 
 # Run Locally
 Prerequisites:
-* Have [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) or later
+* Have [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (or later) installed
   
 Install and Run:
 * run `git clone https://github.com/Hy0tic/bn-screenshare.git`
