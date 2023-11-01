@@ -1,5 +1,6 @@
 # bn-screenshare
 [![CodeFactor](https://www.codefactor.io/repository/github/hy0tic/bn-screenshare/badge)](https://www.codefactor.io/repository/github/hy0tic/bn-screenshare)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Hy0tic_bn-screenshare&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Hy0tic_bn-screenshare)
+[![Build and deploy](https://github.com/Hy0tic/bn-screenshare/actions/workflows/main_bnscreenshare.yml/badge.svg)](https://github.com//Hy0tic/bn-screenshare/actions/workflows/main_bnscreenshare.yml) 
 
 Signaling Server for bn-screenshare
