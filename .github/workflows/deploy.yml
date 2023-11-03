@@ -1,0 +1,32 @@
+name: Upload image to docker
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  build-docker-image:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build docker image
+        run: docker build -t ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api .
+
+      - name: Log into Docker and upload image
+        env: 
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api
