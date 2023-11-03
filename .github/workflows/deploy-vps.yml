@@ -48,4 +48,4 @@ jobs:
               docker stop BnScreenshareAPI
               docker rm BnScreenshareAPI
               docker pull ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
-              docker run -d --restart=always -p 8080:80 -p 8443:443 --name BnScreenshareAPI ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
+              docker run -d --restart=always -p 80:80 -p 8443:443 --name BnScreenshareAPI ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
