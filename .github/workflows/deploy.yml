@@ -10,7 +10,6 @@ on:
 
 jobs:
   build-docker-image:
-    needs: [ build ]
     runs-on: ubuntu-latest
     defaults:
       run:
