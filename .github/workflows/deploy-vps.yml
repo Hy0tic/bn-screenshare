@@ -33,7 +33,7 @@ jobs:
   deploy-to-VPS:
       needs: [ build-docker-image ]
       environment:
-        name: 'develop'
+        name: 'Vultr'
       runs-on: ubuntu-latest
 
       steps:
