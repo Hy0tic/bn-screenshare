@@ -5,6 +5,10 @@
 
 Signaling Server for bn-screenshare
 
+[Vultr server](https://www.bn-chat.net)
+
+[Azure server](bnscreenshare.azurewebsites.net)
+
 # Run Locally
 Prerequisites:
 * Have [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (or later) installed
