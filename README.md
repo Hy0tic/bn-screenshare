@@ -5,7 +5,7 @@
 
 Signaling Server for bn-screenshare
 
-[Vultr server](https://www.bn-chat.net)
+[Vultr server](https://bnscreenshareapi.bnlabsolutions.net)
 
 [Azure server](bnscreenshare.azurewebsites.net)
 
