@@ -9,6 +9,8 @@ Signaling Server for bn-screenshare
 
 [Azure server](bnscreenshare.azurewebsites.net)
 
+[Trello Board](https://trello.com/b/1A3sIg41/bnscreenshare)
+
 # Run Locally
 Prerequisites:
 * Have [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (or later) installed
