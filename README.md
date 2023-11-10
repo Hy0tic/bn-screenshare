@@ -6,7 +6,6 @@
 Signaling Server for bn-screenshare
 
 [Vultr server](https://bnscreenshareapi.bnlabsolutions.net)
-
 [Azure server](bnscreenshare.azurewebsites.net)
 
 [Trello Board](https://trello.com/b/1A3sIg41/bnscreenshare)
