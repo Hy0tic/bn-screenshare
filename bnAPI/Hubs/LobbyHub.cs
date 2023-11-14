@@ -1,5 +1,4 @@
-﻿using bnAPI.Models;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 
 namespace bnAPI.Hubs;
 
