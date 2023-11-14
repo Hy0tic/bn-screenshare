@@ -19,6 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Run tests
+        run: dotnet test
+
       - name: Build docker image
         run: docker build -t ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api .
 
