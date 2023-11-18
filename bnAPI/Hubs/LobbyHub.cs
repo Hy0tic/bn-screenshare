@@ -4,9 +4,33 @@ namespace bnAPI.Hubs;
 
 public class LobbyHub : Hub
 {
+    public List<string> FoodList { get; set; }
+    private readonly Random _random = new Random();
+    public LobbyHub()
+    {
+        FoodList = new List<string>
+        {
+            "Apple", "Mango", "Olive", "Lemon", "Peach", 
+            "Berry", "Chard", "Dates", "Grape", "Melon", 
+            "Guava", "Onion", "Chili", "Sushi", "Bread", 
+            "Pasta", "Lychee", "Bagel", "Bacon", "Trout", 
+            "Steak", "Fries", "Herbs", "Honey", "Kiwi", 
+            "Prune", "Squid", "Tofu", "Wheat", "Basil", 
+            "Curry", "Thyme", "Beans", "Cream", "Flax", 
+            "Jelly", "Pizza", "Salad", "Rice", "Maize", 
+            "Pears", "Plums", "Cocoa", "Limes", "Nuts", 
+            "Seeds", "Chips", "Salsa", "Cakes", "Mints", 
+            "Wafel", "Broth", "Stews", "Soups", "Syrup", 
+            "Tarts", "Rolls", "Romesco", "Tapas", "Kabob", 
+            "Naans", "Tacos", "Nacho", "Queso", "Vegan", 
+            "Meats", "Fruit", "Spice", "Scone", "Latte", 
+            "Juice", "Drink", "Water", "Wines", "Beers", 
+            "Ale", "Cider", "Pesto", "Sauce", "Cheese"
+        };
+    }
     public async Task CreateLobby()
     {
-        var lobbyId = Guid.NewGuid().ToString().Substring(0, 5);
+        var lobbyId = PickRandomFood(FoodList);
         var groupName = $"Lobby-{lobbyId}";
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         await Clients.Caller.SendAsync("JoinedGroup", lobbyId);
@@ -42,6 +66,12 @@ public class LobbyHub : Hub
     {
         var groupName = $"Lobby-{lobbyId}";
         await Clients.Group(groupName).SendAsync("ReceiveMessage", username,message);
+    }
+    
+    private string PickRandomFood(List<string> foods)
+    {
+        var index = _random.Next(foods.Count);
+        return foods[index];
     }
     
 }
