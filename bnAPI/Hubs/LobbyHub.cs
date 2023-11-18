@@ -4,30 +4,31 @@ namespace bnAPI.Hubs;
 
 public class LobbyHub : Hub
 {
-    public List<string> FoodList { get; set; }
+    private List<string> FoodList { get; set; }
     private readonly Random _random = new Random();
     public LobbyHub()
     {
         FoodList = new List<string>
         {
-            "Apple", "Mango", "Olive", "Lemon", "Peach", 
-            "Berry", "Chard", "Dates", "Grape", "Melon", 
-            "Guava", "Onion", "Chili", "Sushi", "Bread", 
-            "Pasta", "Lychee", "Bagel", "Bacon", "Trout", 
-            "Steak", "Fries", "Herbs", "Honey", "Kiwi", 
-            "Prune", "Squid", "Tofu", "Wheat", "Basil", 
-            "Curry", "Thyme", "Beans", "Cream", "Flax", 
-            "Jelly", "Pizza", "Salad", "Rice", "Maize", 
-            "Pears", "Plums", "Cocoa", "Limes", "Nuts", 
-            "Seeds", "Chips", "Salsa", "Cakes", "Mints", 
-            "Wafel", "Broth", "Stews", "Soups", "Syrup", 
-            "Tarts", "Rolls", "Romesco", "Tapas", "Kabob", 
-            "Naans", "Tacos", "Nacho", "Queso", "Vegan", 
-            "Meats", "Fruit", "Spice", "Scone", "Latte", 
-            "Juice", "Drink", "Water", "Wines", "Beers", 
-            "Ale", "Cider", "Pesto", "Sauce", "Cheese"
+            "apple", "mango", "olive", "lemon", "peach", 
+            "berry", "chard", "dates", "grape", "melon", 
+            "guava", "onion", "chili", "sushi", "bread", 
+            "pasta", "lychee", "bagel", "bacon", "trout", 
+            "steak", "fries", "herbs", "honey", "kiwis", 
+            "prune", "squid", "tofus", "wheat", "basil", 
+            "curry", "thyme", "beans", "cream", "patty", 
+            "jelly", "pizza", "salad", "rices", "maize", 
+            "pears", "plums", "cocoa", "limes", "yeast", 
+            "seeds", "chips", "salsa", "cakes", "mints", 
+            "wafer", "broth", "stews", "soups", "syrup", 
+            "tarts", "rolls", "romesco", "tapas", "kabob", 
+            "naans", "tacos", "nacho", "queso", "vegan", 
+            "meats", "fruit", "spice", "scone", "latte", 
+            "juice", "drink", "water", "wines", "beers", 
+            "toast", "cider", "pesto", "sauce", "cheese"
         };
     }
+
     public async Task CreateLobby()
     {
         var lobbyId = PickRandomFood(FoodList);
@@ -71,6 +72,10 @@ public class LobbyHub : Hub
     private string PickRandomFood(List<string> foods)
     {
         var index = _random.Next(foods.Count);
+        while (foods[index].Length != 5)
+        {
+            index = _random.Next(foods.Count);
+        }
         return foods[index];
     }
     
