@@ -14,8 +14,8 @@ public class LobbyHub : Hub
             "berry", "chard", "dates", "grape", "melon", 
             "guava", "onion", "chili", "sushi", "bread", 
             "pasta", "lychee", "bagel", "bacon", "trout", 
-            "steak", "fries", "herbs", "honey", "kiwis", 
-            "prune", "squid", "tofus", "wheat", "basil", 
+            "steak", "fries", "herbs", "honey", "kiwi", 
+            "prune", "squid", "tofu", "wheat", "basil", 
             "curry", "thyme", "beans", "cream", "patty", 
             "jelly", "pizza", "salad", "rices", "maize", 
             "pears", "plums", "cocoa", "limes", "yeast", 
@@ -23,7 +23,7 @@ public class LobbyHub : Hub
             "wafer", "broth", "stews", "soups", "syrup", 
             "tarts", "rolls", "romesco", "tapas", "kabob", 
             "naans", "tacos", "nacho", "queso", "vegan", 
-            "meats", "fruit", "spice", "scone", "latte", 
+            "meat", "fruit", "spice", "scone", "latte", 
             "juice", "drink", "water", "wines", "beers", 
             "toast", "cider", "pesto", "sauce", "cheese"
         };
