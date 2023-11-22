@@ -19,8 +19,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Run tests
-        run: dotnet test
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: Run the Cake script
+        run: |
+         dotnet tool restore
+         dotnet cake ../build.cake
 
       - name: Build docker image
         run: docker build -t ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api .
