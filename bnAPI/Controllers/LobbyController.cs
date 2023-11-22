@@ -8,7 +8,7 @@ public class LobbyController : Controller
     [HttpGet("/hello")]
     public IActionResult Hello()
     {
-        return Ok("Hello");
+        return Ok("Hello This Is BnScreenshareAPI");
     }
 
 }

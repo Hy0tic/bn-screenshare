@@ -1,0 +1,61 @@
+name: Upload image to docker
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: Run the Cake script
+        run: |
+          dotnet tool restore
+          dotnet cake build.cake
+
+      - name: Build docker image
+        run: docker build -t ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api .
+
+      - name: Log into Docker and upload image
+        env: 
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api
+
+  deploy-to-VPS:
+      needs: [ build-docker-image ]
+      environment:
+        name: 'Vultr'
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: SSH into VPS, pull docker image and run the image
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.PROD_SSH_HOST }}
+            username: ${{ secrets.PROD_SSH_USER }}
+            password: ${{ secrets.VPS_PASSWORD }}
+            script: |
+              echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+              docker stop BnScreenshareAPI
+              docker rm BnScreenshareAPI
+              docker pull ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
+              docker run -d --restart=always -p 8080:80 -p 8443:443 --name BnScreenshareAPI ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
