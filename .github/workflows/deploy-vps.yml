@@ -26,8 +26,8 @@ jobs:
 
       - name: Run the Cake script
         run: |
-         dotnet tool restore
-         dotnet-cake ../build.cake
+          dotnet tool restore
+          dotnet-cake build.cake
 
       - name: Build docker image
         run: docker build -t ${{secrets.DOCKER_USERNAME}}/bn-screenshare-api .
