@@ -1,9 +1,9 @@
 using bnAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace bn_screenshare.tests;
+namespace bn_screenshare.tests.ApiTests;
 
-public class ApiTests
+public class LobbyControllerTests
 {
 
     [Fact]
