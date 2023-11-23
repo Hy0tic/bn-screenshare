@@ -72,7 +72,7 @@ public class LobbyHub : Hub
     private static string PickRandomFood(List<string> foods)
     {
         var index = RandomNumberGenerator.GetInt32(foods.Count);
-        while (foods[index].Length > 3)
+        while (foods[index].Length < 3)
         {
             index = RandomNumberGenerator.GetInt32(foods.Count);
         }
