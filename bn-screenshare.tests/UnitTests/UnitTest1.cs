@@ -1,4 +1,4 @@
-namespace bn_screenshare.tests;
+namespace bn_screenshare.tests.UnitTests;
 
 public class UnitTest1
 {

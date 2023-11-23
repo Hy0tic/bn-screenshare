@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Security.Cryptography;
 
 namespace bnAPI.Hubs;
 
 public class LobbyHub : Hub
 {
     private List<string> FoodList { get; set; }
-    private readonly Random _random = new Random();
     public LobbyHub()
     {
         FoodList = new List<string>
@@ -69,12 +69,12 @@ public class LobbyHub : Hub
         await Clients.Group(groupName).SendAsync("ReceiveMessage", username,message);
     }
     
-    private string PickRandomFood(List<string> foods)
+    private static string PickRandomFood(List<string> foods)
     {
-        var index = _random.Next(foods.Count);
-        while (foods[index].Length != 5)
+        var index = RandomNumberGenerator.GetInt32(foods.Count);
+        while (foods[index].Length > 3)
         {
-            index = _random.Next(foods.Count);
+            index = RandomNumberGenerator.GetInt32(foods.Count);
         }
         return foods[index];
     }
