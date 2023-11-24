@@ -49,6 +49,11 @@ RUN sh autogen.sh
 RUN ./configure --prefix=/opt/janus
 RUN make && make install && make configs
 
+# Create conf directory and janus.plugin.streaming.jcfg file
+RUN mkdir -p /opt/janus/etc/janus && \
+    echo "rtp-sample: {\n\ttype = \"rtp\"\n\tid = 1\n\tdescription = \"Opus/VP8 live stream coming from external source\"\n\tmetadata = \"You can use this metadata section to put any info you want!\"\n\taudio = true\n\tvideo = true\n\taudioport = 5002\n\taudiopt = 111\n\taudiocodec = \"opus\"\n\tvideoport = 5004\n\tvideopt = 100\n\tvideocodec = \"vp8\"\n\tsecret = \"adminpwd\"\n}" > /opt/janus/etc/janus/janus.plugin.streaming.jcfg
+
+
 # Configure STUN server
 RUN sed -i 's/#stun_server = "stun.l.google.com"/stun_server = "stun4.l.google.com"/' /opt/janus/etc/janus/janus.jcfg
 RUN sed -i 's/#stun_port = 19302/stun_port = 19302/' /opt/janus/etc/janus/janus.jcfg
