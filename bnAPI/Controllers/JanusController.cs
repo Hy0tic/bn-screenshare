@@ -11,7 +11,7 @@ namespace bnAPI.Controllers;
 
 public class JanusController : Controller
 {
-    private readonly string _janusServerUrl = "http://localhost:8088/janus";
+    private const string JanusServerUrl = "http://localhost:8088/janus";
 
     private readonly HttpClient _httpClient;
 
@@ -23,18 +23,14 @@ public class JanusController : Controller
     [HttpPost("/initialize")]
     public async Task<IActionResult> InitializeJanusSession()
     {
-        using var client = new HttpClient();
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, _janusServerUrl);
-    
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, JanusServerUrl);
         var transactionId = Guid.NewGuid().ToString();  // Generating a unique transaction ID
-
         requestMessage.Content = new StringContent(JsonSerializer.Serialize(new
         {
             janus = "create",
             transaction = transactionId
         }), Encoding.UTF8, "application/json");  // Specified encoding and content type
-    
-        var response = await client.SendAsync(requestMessage);
+        var response = await _httpClient.SendAsync(requestMessage);
         if (response.IsSuccessStatusCode)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -62,17 +58,16 @@ public class JanusController : Controller
     [HttpPost("/attachPlugin")]
     public async Task<IActionResult> AttachPlugin(string sessionId)
     {
-        using var client = new HttpClient();
         var transactionId = GenerateTransactionId();
-        var requestUrl = $"{_janusServerUrl}/{sessionId}";
+        var requestUrl = $"{JanusServerUrl}/{sessionId}";
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUrl);
         requestMessage.Content = new StringContent(JsonSerializer.Serialize(new
         {
             janus = "attach",
-            plugin = "janus.plugin.videoroom",
+            plugin = "janus.plugin.streaming",
             transaction = transactionId
         }), Encoding.UTF8, "application/json");
-        var response = await client.SendAsync(requestMessage);
+        var response = await _httpClient.SendAsync(requestMessage);
         if (response.IsSuccessStatusCode)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -99,7 +94,7 @@ public class JanusController : Controller
     {
         return Guid.NewGuid().ToString();
     }
-    
+
     [HttpPost("/SendOfferToJanus")]
     public async Task<IActionResult> SendOfferToJanus([FromBody] JanusOffer offerDetails)
     {
@@ -114,7 +109,7 @@ public class JanusController : Controller
             transaction = transactionId, 
             body = new
             {
-                // request = "configure",
+                // request = '',
                 audio = true,
                 video = true
             },
@@ -126,7 +121,7 @@ public class JanusController : Controller
         };
 
         var content = new StringContent(JsonSerializer.Serialize(requestPayload), Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync($"{_janusServerUrl}/{sessionId}/{pluginId}", content); // sessionId and pluginId are values you would've gotten when initially setting up the session and attaching a plugin
+        var response = await _httpClient.PostAsync($"{JanusServerUrl}/{sessionId}/{pluginId}", content); // sessionId and pluginId are values you would've gotten when initially setting up the session and attaching a plugin
 
         if (response.IsSuccessStatusCode)
         {
@@ -139,77 +134,129 @@ public class JanusController : Controller
         return Ok();
     }
     
-    [HttpPost("/CreateVideoRoom")]
-    public async Task<IActionResult> CreateVideoRoom(string sessionId, string pluginId)
+    [HttpPost("create-stream")]
+    public async Task<IActionResult> CreateStream()
     {
-        var roomDescription = "the cave";
-        var rnd = new Random();
-        var roomId = rnd.Next();
-        
-        // Construct the request payload
-        var requestPayload = new
-        {
-            janus = "message",
-            transaction = Guid.NewGuid().ToString(),
-            body = new
-            {
-                request = "create",
-                room = roomId,
-                description = roomDescription,
-                publishers = 6  // For example, allows 6 publishers.
-            }
-        };
-        
-        // Serialize the payload to JSON
-        var content = new StringContent(
-            JsonConvert.SerializeObject(requestPayload),
-            Encoding.UTF8,
-            "application/json");
-        
-        var response = await _httpClient.PostAsync($"{_janusServerUrl}/{sessionId}/{pluginId}", content);
-        // Read the response content
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var jsonResponse = JObject.Parse(responseContent);
+        // Create the session with Janus first
+        var sessionId = await CreateJanusSession();
 
-        if (jsonResponse["janus"].ToString() != "success")
-        {
-            Console.WriteLine($"Failed to create room: {jsonResponse["error"]["reason"]}");
-            return BadRequest($"Failed to create room: {jsonResponse["error"]["reason"]}");
-        }
-        Console.WriteLine("Successfully created the video room!");
-        return Ok(responseContent);
+        // Attach to the streaming plugin
+        var handleId = await AttachToStreamingPlugin(sessionId);
+
+        // Send the create request to the streaming plugin
+        var config = new StreamConfig();
+        var response = await SendCreateStreamRequest(sessionId, handleId, config);
+        return Ok(response);
     }
-
-    [HttpPost("/JoinRoomAsPublisher")]
-    public async Task<IActionResult> JoinVideoRoomAsPublisher(string sessionId, string pluginId, int roomId, string displayName)
+    private async Task<string> CreateJanusSession()
     {
-        // Construct the body of the request to Janus
-        var janusRequestBody = new
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, JanusServerUrl);
+        var transactionId = Guid.NewGuid().ToString();  // Generating a unique transaction ID
+        requestMessage.Content = new StringContent(JsonSerializer.Serialize(new
         {
-            janus = "message",
-            body = new
-            {
-                request = "join",
-                ptype = "publisher",
-                room = roomId,
-                display = displayName
-            },
-            transaction = GenerateTransactionId() // This should be a unique ID for each request
-        };
-
-        var content = new StringContent(JsonSerializer.Serialize(janusRequestBody), Encoding.UTF8, "application/json");
-
-        // Send the request to the Janus server
-        var response = await _httpClient.PostAsync($"{_janusServerUrl}/{sessionId}/{pluginId}", content);
-
-        if (!response.IsSuccessStatusCode) return BadRequest(response);
-        var responseBody = await response.Content.ReadAsStringAsync();
-        Console.Write(responseBody);
+            janus = "create",
+            transaction = transactionId
+        }), Encoding.UTF8, "application/json");  // Specified encoding and content type
+        var response = await _httpClient.SendAsync(requestMessage);
         
-        return Ok(response); // Return the Janus server response to the client
-
+        if (response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JsonSerializer.Deserialize<JsonElement>(responseBody);
+            
+            if (jsonResponse.TryGetProperty("data", out var data) &&
+                data.TryGetProperty("id", out var sessionId))
+            {
+                return sessionId.ToString();
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        else
+        {
+            throw new Exception();
+        }
     }
     
+    private async Task<string> AttachToStreamingPlugin(string sessionId)
+    {
+        var transactionId = GenerateTransactionId();
+        var requestUrl = $"{JanusServerUrl}/{sessionId}";
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+        
+        requestMessage.Content = new StringContent(JsonSerializer.Serialize(new
+        {
+            janus = "attach",
+            plugin = "janus.plugin.streaming",
+            transaction = transactionId
+        }), Encoding.UTF8, "application/json");
+        
+        var response = await _httpClient.SendAsync(requestMessage);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var jsonResponse = JsonSerializer.Deserialize<JsonElement>(responseBody);
+
+            if (jsonResponse.TryGetProperty("data", out var data) &&
+                data.TryGetProperty("id", out var pluginId))
+            {
+                return pluginId.ToString();
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        else
+        {
+            throw new Exception();
+        }
+    }
+    
+    private async Task<object> SendCreateStreamRequest(string sessionId, string handleId, StreamConfig config)
+    {
+        var requestUrl = $"{JanusServerUrl}/{sessionId}/{handleId}";
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+        var createStreamRequest = new
+        {
+            janus = "message",
+            transaction = Guid.NewGuid().ToString(), // Generate a new transaction ID
+            body = new
+            {
+                request = "list",
+                // type = config.Type,
+                // description = config.Description,
+                // audio = config.IsAudioActive,
+                // video = config.IsVideoActive,
+                // audioport = 5002,
+                // audioopt = 111
+                // Add more fields based on your StreamConfig
+            },
+            session_id = sessionId,
+            handle_id = handleId
+        };
+
+        var jsonRequest = JsonSerializer.Serialize(createStreamRequest);
+        requestMessage.Content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+        
+
+        // Send the request to the Janus server
+        var response = await _httpClient.SendAsync(requestMessage);
+        if (!response.IsSuccessStatusCode)
+        {
+            return null; // or handle the error as appropriate
+        }
+
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        var responseObject = JsonSerializer.Deserialize<object>(jsonResponse); // Deserialize to a dynamic object or a specific class
+
+        return responseObject;
+    }
+
     [HttpPost("/SendICECandidatesToJanus")]
     public async Task<IActionResult> SendICECandidatesToJanus(string ICEcandidates)
     {
@@ -222,4 +269,14 @@ public class JanusController : Controller
         public string SessionId { get; set; }
         public string PluginId { get; set; }
     }
+    
+    public class StreamConfig
+    {
+        public string Description { get; set; } = "Test Stream";
+        public bool IsAudioActive { get; set; } = true;
+        public bool IsVideoActive { get; set; } = true;
+        public string Type { get; set; } = "rtp";
+        // Add more properties as needed for your stream configuration
+    }
+
 }
