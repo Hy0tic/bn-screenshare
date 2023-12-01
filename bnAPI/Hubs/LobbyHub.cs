@@ -39,7 +39,7 @@ public class LobbyHub : Hub
     
     public async Task JoinLobby(string lobbyId)
     {
-        var lobbyName = $"Lobby-{lobbyId}";
+        var lobbyName = GetLobbyName(lobbyId);
         await Clients.Group(lobbyName).SendAsync("MemberJoined", Context.ConnectionId);
         await Groups.AddToGroupAsync(Context.ConnectionId, lobbyName);
         await Clients.Caller.SendAsync("JoinedGroup", lobbyId);
@@ -47,9 +47,9 @@ public class LobbyHub : Hub
 
     public async Task LeaveLobby(string lobbyId)
     {
-        var groupName = $"Lobby-{lobbyId}";
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-        await Clients.Group(groupName).SendAsync("CallerLeft", $"{Context.ConnectionId} has left the group {groupName}.");
+        var lobbyName = $"Lobby-{lobbyId}";
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyName);
+        await Clients.Group(lobbyName).SendAsync("CallerLeft", $"{Context.ConnectionId} has left the group {lobbyName}.");
     }
 
     public async Task SendOffer(string text, string uid)
@@ -59,14 +59,14 @@ public class LobbyHub : Hub
 
     public async Task SendOfferToLobby(string lobbyId, string text)
     {
-        var lobbyName = $"Lobby-{lobbyId}";
+        var lobbyName = GetLobbyName(lobbyId);
         await Clients.OthersInGroup(lobbyName).SendAsync("ReceivingOffer", text,Context.ConnectionId);
     }
 
     public async Task SendMessage(string username, string message, string lobbyId)
     {
-        var groupName = $"Lobby-{lobbyId}";
-        await Clients.Group(groupName).SendAsync("ReceiveMessage", username,message);
+        var lobbyName = GetLobbyName(lobbyId);
+        await Clients.Group(lobbyName).SendAsync("ReceiveMessage", username,message);
     }
     
     private string PickRandomFood(List<string> foods)
@@ -77,6 +77,11 @@ public class LobbyHub : Hub
             index = RandomNumberGenerator.GetInt32(foods.Count);
         }
         return foods[index];
+    }
+
+    public string GetLobbyName(string lobbyId)
+    {
+        return $"Lobby-{lobbyId}";
     }
     
 }
