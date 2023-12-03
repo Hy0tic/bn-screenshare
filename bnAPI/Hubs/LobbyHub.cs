@@ -63,10 +63,10 @@ public class LobbyHub : Hub
         await Clients.OthersInGroup(lobbyName).SendAsync("ReceivingOffer", text,Context.ConnectionId);
     }
 
-    public async Task SendMessage(string username, string message, string lobbyId)
+    public async Task SendMessage(string username, string message, string lobbyId, int[] usernameColors)
     {
         var lobbyName = GetLobbyName(lobbyId);
-        await Clients.Group(lobbyName).SendAsync("ReceiveMessage", username,message);
+        await Clients.Group(lobbyName).SendAsync("ReceiveMessage", username, message, usernameColors);
     }
     
     private string PickRandomFood(List<string> foods)
