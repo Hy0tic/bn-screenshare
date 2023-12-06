@@ -17,6 +17,6 @@ public class LobbyControllerTests
 
         Assert.Equal(200, okResult.StatusCode);
         Assert.IsType<OkObjectResult>(result);
-
+        Assert.NotNull(result);
     }
 }

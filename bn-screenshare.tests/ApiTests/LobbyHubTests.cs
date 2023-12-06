@@ -21,4 +21,11 @@ public class LobbyHubTests
         Assert.IsType<string>(x);
     }
 
+    [Fact]
+    public void GetLobbyName_NotNull()
+    {
+        var x = lobbyHub.GetLobbyName("");
+        Assert.NotNull(x);
+    }
+
 }
