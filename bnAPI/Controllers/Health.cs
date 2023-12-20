@@ -19,6 +19,10 @@ public class Health : Controller
         var jsonString = System.IO.File.ReadAllText(filePath);
         var jsonData = JsonSerializer.Deserialize<Dictionary<string, BuildInfo>>(jsonString);
 
+        if(jsonData== null)
+        {
+            return BadRequest("build info not found");
+        }
         var buildInfo = jsonData["buildInfo"];
 
         return Ok(buildInfo);
