@@ -69,7 +69,7 @@ public class LobbyHub : Hub
         await Clients.Group(lobbyName).SendAsync("ReceiveMessage", username, message, usernameColors);
     }
     
-    private string PickRandomFood(List<string> foods)
+    private static string PickRandomFood(List<string> foods)
     {
         var index = RandomNumberGenerator.GetInt32(foods.Count);
         while (foods[index].Length < 3)
