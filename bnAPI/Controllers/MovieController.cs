@@ -1,3 +1,5 @@
+using bnAPI.Models;
+using BnScreenshareAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using TMDbLib.Client;
 
@@ -6,38 +8,37 @@ namespace bnAPI.Controllers;
 [ApiController]
 public class MovieController : Controller
 {
-    public MovieController(TMDbClient tmdbClient)
+    private readonly TMDbClient tmdbClient;
+    private readonly TMDbClientExtension tmDbClientExtension;
+    public MovieController(TMDbClient tmdbClient, TMDbClientExtension tmDbClientExtension)
     {
         this.tmdbClient = tmdbClient;
+        this.tmDbClientExtension = tmDbClientExtension;
     }
-
-    private TMDbClient tmdbClient { get;set; }
-
-    [HttpGet("/searchMovie")]
-    public async Task<IActionResult> SearchMovie(string searchInput)
+    
+    [HttpGet("/Recommend")]
+    public async Task<IActionResult> Recommend()
     {
-        var movieSearch = await tmdbClient.SearchMovieAsync(searchInput);
-        return Ok(movieSearch.Results);
+        var nowPlayingMovies = await tmdbClient.GetMovieNowPlayingListAsync();
+
+        var filteredMovieList = nowPlayingMovies.Results.Where(m => m.VoteAverage > 5
+                                                                    && m.Popularity > 500.0 
+                                                                    && (m.GenreIds.Contains((int)MovieGenre.Mystery)
+                                                                        || m.GenreIds.Contains((int)MovieGenre.Thriller)
+                                                                        || m.GenreIds.Contains((int)MovieGenre.ScienceFiction)
+                                                                        || m.GenreIds.Contains((int)MovieGenre.Horror))
+                                                                        || m.GenreIds.Contains((int)MovieGenre.Animation)
+                                                                        || m.GenreIds.Contains((int)MovieGenre.Comedy)
+                                                                    );
+        return Ok(filteredMovieList);
     }
 
-    [HttpGet("/popularMovies")]
-    public async Task<IActionResult> GetPopularMovies()
+    [HttpGet("/AnimatedMoviesRecommend")]
+    public async Task<IActionResult> CasualWatchRecommend(int pageNumber = 1)
     {
-        var response = await tmdbClient.GetMoviePopularListAsync();
-        return Ok(response.Results);
+        var response = await tmDbClientExtension.GetAnimatedMovieOnly(pageNumber);
+        return Ok(response.results);
     }
 
-    [HttpGet("/nowPlayingMovies")]
-    public async Task<IActionResult> GetNowPlayingMovies()
-    {
-        var response = await tmdbClient.GetMovieNowPlayingListAsync();
-        return Ok(response.Results);
-    }
-
-    [HttpGet("/TopRated")]
-    public async Task<IActionResult> GetTopRatedMovies()
-    {
-        var response = await tmdbClient.GetMovieTopRatedListAsync();
-        return Ok(response.Results);
-    }
 }
+

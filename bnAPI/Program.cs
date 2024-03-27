@@ -1,8 +1,9 @@
 using bnAPI.Hubs;
+using BnScreenshareAPI.Services;
 using TMDbLib.Client;
 
 var builder = WebApplication.CreateBuilder(args);
-var tmbdKey = Environment.GetEnvironmentVariable("TMDbApiKey");
+var tmdbKey = Environment.GetEnvironmentVariable("TMDbApiKey");
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -10,7 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<HttpClient>();
-builder.Services.AddSingleton<TMDbClient>(p => new TMDbClient(tmbdKey));
+builder.Services.AddSingleton<TMDbClient>(p => new TMDbClient(tmdbKey));
+builder.Services.AddSingleton<TMDbClientExtension>(p => new TMDbClientExtension(tmdbKey));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllHeaders",
@@ -27,7 +29,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
 
 app.UseHttpsRedirection();
 

@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+        <PackageReference Include="RestSharp" Version="110.2.1-alpha.0.16" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="TMDbLib" Version="2.1.0" />
     </ItemGroup>

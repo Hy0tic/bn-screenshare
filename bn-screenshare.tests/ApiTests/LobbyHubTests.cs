@@ -6,24 +6,24 @@ namespace bn_screenshare.tests.ApiTests;
 
 public class LobbyHubTests
 {
-    public LobbyHub lobbyHub { get; set; }
+    public LobbyHub LobbyHub { get; set; }
 
     public LobbyHubTests()
     {
-        lobbyHub = new LobbyHub();
+        LobbyHub = new LobbyHub();
     }
 
     [Fact]
     public void GetLobbyName_Return_String()
     {
-        var x = lobbyHub.GetLobbyName("");
+        var x = LobbyHub.GetLobbyName("");
         Assert.IsType<string>(x);
     }
 
     [Fact]
     public void GetLobbyName_NotNull()
     {
-        var x = lobbyHub.GetLobbyName("");
+        var x = LobbyHub.GetLobbyName("");
         Assert.NotNull(x);
     }
 
