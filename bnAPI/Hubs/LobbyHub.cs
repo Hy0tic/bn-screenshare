@@ -1,34 +1,30 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Cryptography;
 
 namespace bnAPI.Hubs;
 
 public class LobbyHub : Hub
 {
-    private List<string> FoodList { get; set; }
-    public LobbyHub()
-    {
-        FoodList = new List<string>
-        {
-            "apple", "mango", "olive", "lemon", "peach", 
-            "berry", "chard", "dates", "grape", "melon", 
-            "guava", "onion", "chili", "sushi", "bread", 
-            "pasta", "lychee", "bagel", "bacon", "trout", 
-            "steak", "fries", "herbs", "honey", "kiwi", 
-            "prune", "squid", "tofu", "wheat", "basil", 
-            "curry", "thyme", "beans", "cream", "patty", 
-            "jelly", "pizza", "salad", "rices", "maize", 
-            "pears", "plums", "cocoa", "limes", "yeast", 
-            "seeds", "chips", "salsa", "cakes", "mints", 
-            "wafer", "broth", "stews", "soups", "syrup", 
-            "tarts", "rolls", "romesco", "tapas", "kabob", 
-            "naans", "tacos", "nacho", "queso", "vegan", 
-            "meat", "fruit", "spice", "scone", "latte", 
-            "juice", "drink", "water", "wines", "beers", 
-            "toast", "cider", "pesto", "sauce", "cheese"
-        };
-    }
-
+    private readonly string[] FoodList = { 
+        "apple", "mango", "olive", "lemon", "peach",
+        "berry", "chard", "dates", "grape", "melon",
+        "guava", "onion", "chili", "sushi", "bread",
+        "pasta", "lychee", "bagel", "bacon", "trout",
+        "steak", "fries", "herbs", "honey", "kiwi",
+        "prune", "squid", "tofu", "wheat", "basil",
+        "curry", "thyme", "beans", "cream", "patty",
+        "jelly", "pizza", "salad", "rices", "maize",
+        "pears", "plums", "cocoa", "limes", "yeast",
+        "seeds", "chips", "salsa", "cakes", "mints",
+        "wafer", "broth", "stews", "soups", "syrup",
+        "tarts", "rolls", "romesco", "tapas", "kabob",
+        "naans", "tacos", "nacho", "queso", "vegan",
+        "meat", "fruit", "spice", "scone", "latte",
+        "juice", "drink", "water", "wines", "beers",
+        "toast", "cider", "pesto", "sauce", "cheese"
+    };
+    
     public async Task CreateLobby()
     {
         var lobbyId = PickRandomFood(FoodList);
@@ -69,12 +65,12 @@ public class LobbyHub : Hub
         await Clients.Group(lobbyName).SendAsync("ReceiveMessage", username, message, usernameColors);
     }
     
-    private static string PickRandomFood(List<string> foods)
+    private static string PickRandomFood(string[] foods)
     {
-        var index = RandomNumberGenerator.GetInt32(foods.Count);
+        var index = RandomNumberGenerator.GetInt32(foods.Length);
         while (foods[index].Length < 3)
         {
-            index = RandomNumberGenerator.GetInt32(foods.Count);
+            index = RandomNumberGenerator.GetInt32(foods.Length);
         }
         return foods[index];
     }
