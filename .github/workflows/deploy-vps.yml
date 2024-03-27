@@ -58,4 +58,8 @@ jobs:
               docker stop BnScreenshareAPI
               docker rm BnScreenshareAPI
               docker pull ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
-              docker run -d --restart=always -p 127.0.0.1:4001:8080 --name BnScreenshareAPI ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
+              docker run -d --restart=always \
+              -p 127.0.0.1:4001:8080 \
+              --name BnScreenshareAPI \
+              --env TMDbApiKey=${{ secrets.TMDbApiKey }} \
+              ${{ secrets.DOCKER_USERNAME }}/bn-screenshare-api:latest
