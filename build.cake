@@ -38,7 +38,7 @@ Task("Generate Build Info")
         var lastCommit = ((ICakeContext)cakeContext).GitLogTip("./");
         var repoPath = DirectoryPath.FromString(".");
         var currentBranch = ((ICakeContext)cakeContext).GitBranchCurrent(repoPath);
-        var timeZone = TimeZoneInfo.Local;
+        var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
 
         var gitHash = lastCommit.Sha?.Substring(0,7) ?? "";
         var buildDate = DateTime.Now;
