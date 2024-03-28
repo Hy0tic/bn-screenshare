@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace bnAPI.Hubs;
 
-public class LobbyHub : Hub
+public sealed class LobbyHub : Hub
 {
     private readonly string[] FoodList = { 
         "apple", "mango", "olive", "lemon", "peach",

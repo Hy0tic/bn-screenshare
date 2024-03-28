@@ -4,7 +4,7 @@ using BnScreenshareAPI;
 
 namespace bnAPI.Controllers;
 
-public class Health : Controller
+public sealed class Health : Controller
 {
     
     [HttpGet("/getVersion")]

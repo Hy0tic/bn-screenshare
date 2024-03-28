@@ -1,6 +1,6 @@
 ﻿namespace bnAPI.Models;
 
-public class Result
+public sealed class Result
 {
     public bool adult { get; set; }
     public string backdrop_path { get; set; }
@@ -18,7 +18,7 @@ public class Result
     public int vote_count { get; set; }
 }
 
-public class DiscoverMovieResponse
+public sealed class DiscoverMovieResponse
 {
     public int page { get; set; }
     public List<Result> results { get; set; }

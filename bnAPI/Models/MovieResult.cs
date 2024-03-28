@@ -1,6 +1,6 @@
 ﻿namespace bnAPI.Models;
 
-public class MovieResult
+public sealed class MovieResult
 {
     public uint Id { get; set; }
     public string Title { get; set; }

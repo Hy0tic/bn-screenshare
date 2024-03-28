@@ -4,7 +4,7 @@ using RestSharp;
 
 namespace BnScreenshareAPI.Services;
 
-public class TMDbClientExtension
+public sealed class TMDbClientExtension
 {
     private string ApiKey { get; set; }
 

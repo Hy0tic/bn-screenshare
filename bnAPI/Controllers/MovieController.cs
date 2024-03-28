@@ -6,7 +6,7 @@ using TMDbLib.Client;
 namespace bnAPI.Controllers;
 
 [ApiController]
-public class MovieController : Controller
+public sealed class MovieController : Controller
 {
     private readonly TMDbClient tmdbClient;
     private readonly TMDbClientExtension tmDbClientExtension;
